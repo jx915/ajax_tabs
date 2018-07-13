@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <title>ajax头部标签页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        li {
+            list-style: none;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .warp {
+            width: 50%;
+            height: 400px;
+            margin: 20px auto;
+            border: 1px solid #ccc;
+            display: flex;
+        }
+
+        .left,
+        .right {
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .left {
+            border-right: 1px solid #ccc;
+            width: 200px;
+            padding: 20px;
+        }
+
+        .right {
+            width: calc(100% - 200px)
+        }
+        .topNav {
+            height: 50px;
+            border-bottom: 1px solid #ccc;
+            line-height: 50px;
+            padding:0 20px;
+            overflow: hidden;
+            position: relative;
+        }
+        .move{
+            position: absolute;
+            top:0;
+            width:12px;
+            height: 12px;
+        }
+        .moveLfet{
+            
+            left:0;
+        }
+        .moveRight{
+            right:0;
+        }
+        .topNav>ul{
+            min-width:1000%;
+        }
+        .topNav li {
+            margin-top:10px;
+            height:30px;
+            padding:0 5px;
+            font-size:12px;
+            border-radius: 4px;
+            display: inline-block;
+            overflow: hidden;
+            line-height: 30px;
+            border:1px solid #ccc;
+        }
+        .content>div.active{
+            display:block;
+        }
+        .content>div{
+            display:none;
+        }
+        .topNav li>a.active,.navItem>a.active{
+            color:red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="warp">
+        <div class="left">
+            <ul>
+                <li class="navItem">
+                    <a href="javascript:void(0)" data-value="./nav1.html">导航1</a>
+                </li>
+                <li class="navItem">
+                    <a href="javascript:void(0)" data-value="./nav2.html">导航2</a>
+                </li>
+                <li class="navItem">
+                    <a href="javascript:void(0)" data-value="./nav3.html">导航3</a>
+                </li>
+            </ul>
+        </div>
+        <div class="right">
+            <div class="topNav">
+               
+                <div class="moveLfet move">
+                    <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                </div>
+                <div class="moveRight move">
+                        <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                </div>
+                
+                <ul id="topNav">
+                    <li class="tabNav"><a href="#" class="">导航1</a></li>
+                    <li class="tabNav"><a href="#" class="">导航2</a></li>
+                    <li class="tabNav"><a href="#" class="">导航1</a></li>
+                    <li class="tabNav"><a href="#" class="">导航2</a></li>
+                    <li class="tabNav"><a href="#" class="">导航1</a></li>
+                    <li class="tabNav"><a href="#" class="">导航2</a></li>
+                    <li class="tabNav"><a href="#" class="">导航1</a></li>
+                    <li class="tabNav"><a href="#" class="">导航2</a></li>
+                    <li class="tabNav"><a href="#" class="">导航1</a></li>
+                    <li class="tabNav"><a href="#" class="">导航2</a></li>
+                    <li class="tabNav"><a href="#" class="">导航1</a></li>
+                    <li class="tabNav"><a href="#" class="">导航2</a></li>
+                    
+                </ul>
+            </div>
+            <div class="content" id="content">
+
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+ 
+
+</body>
+
+</html>
