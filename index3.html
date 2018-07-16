@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <title>ajax头部标签页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        li {
+            list-style: none;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .warp {
+            width: 50%;
+            height: 400px;
+            margin: 20px auto;
+            border: 1px solid #ccc;
+            display: flex;
+        }
+
+        .left,
+        .right {
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .left {
+            border-right: 1px solid #ccc;
+            width: 200px;
+            padding: 20px;
+        }
+
+        .right {
+            width: calc(100% - 200px)
+        }
+
+        .topNav {
+            height: 50px;
+            border-bottom: 1px solid #ccc;
+            line-height: 50px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .move {
+            position: absolute;
+            top: 0;
+            width: 20px;
+            background: #fff;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .move i {
+            cursor: pointer;
+            display: none;
+        }
+
+        .moveLfet {
+            left: 0;
+        }
+
+        .moveRight {
+            right: 0;
+        }
+
+        .topNav ul {
+            position: absolute;
+            min-width: 1000%;
+            display: flex;
+            height: 50px;
+            transition: left .2s ease-in;
+        }
+
+        .topNav li {
+            margin-top: 10px;
+            height: 30px;
+            font-size: 12px;
+            border-radius: 4px;
+            overflow: hidden;
+            line-height: 30px;
+            border: 1px solid #ccc;
+        }
+
+        .content>div.active {
+            display: block;
+        }
+
+        .content>div {
+            display: none;
+        }
+
+        .topNav li>a {
+            display: inline-flex;
+            padding: 0 30px;
+        }
+
+        .topNav li>a.active,
+        .navItem>a.active {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="warp">
+        <div class="left">
+            <ul>
+                <li class="navItem">
+                    <a href="javascript:void(0)" data-value="./nav1.html">导航1</a>
+                </li>
+                <li class="navItem">
+                    <a href="javascript:void(0)" data-value="./nav2.html">导航2</a>
+                </li>
+                <li class="navItem">
+                    <a href="javascript:void(0)" data-value="./nav3.html">导航3</a>
+                </li>
+                <li class="navItem">
+                    <a href="javascript:void(0)" data-value="./nav4.html">导航4</a>
+                </li>
+                <li class="navItem">
+                    <a href="javascript:void(0)" data-value="./nav5.html">导航5</a>
+                </li>
+            </ul>
+        </div>
+        <div class="right">
+            <div class="topNav">
+
+                <div class="moveLfet move">
+                    <i class="fa fa-arrow-left" id='left' aria-hidden="true"></i>
+                </div>
+                <div class="moveRight move">
+                    <i class="fa fa-arrow-right" id='right' aria-hidden="true"></i>
+                </div>
+                <ul id="topNav">
+
+                </ul>
+
+            </div>
+            <div class="content" id="content">
+
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script type=text/javascript>
+        var tabScrool = (function () {
+            let key = 0;
+            let itemInfo = {
+                tabW: '',
+                itemNum: '',
+                length: '',
+                itemIndex: '',
+                itemShowNum: '', //能够完整显示几个
+            }
+
+            function tabScrool() {
+
+            }
+            tabScrool.prototype.init = function(){
+                let tabW = parseFloat($('.topNav').width()) //获取tab内容块的宽度
+                let itemNum = $('#topNav li').length; //标签个数
+                let length = 0; //标签总长度
+                let itemIndex = itemNum; //标签页能够完整第几个
+                $('#topNav li').each(function () {
+                    if (length < tabW) {
+                        length += parseFloat($(this).outerWidth());
+                        if (length > tabW) {
+                            itemIndex = $(this).index();
+                        }
+                    }
+                })
+                // console.log(tabW, itemNum, length, itemIndex)
+                if (itemIndex < itemNum && key == 0) {
+                    $('#left').show();
+                    $('#right').show()
+                    $('.topNav').css('padding', '0 20px');
+                    $('.topNav ul').css('left', '25px');
+                    key = 1;
+                    this.init(); //重新计算
+                } else {
+                    itemInfo.tabW = tabW;
+                    itemInfo.itemNum = itemNum;
+                    itemInfo.length = length;
+                    itemInfo.itemIndex = itemIndex-1;
+                    itemInfo.itemShowNum = itemIndex;
+                    // console.log(tabW, itemNum, length, itemIndex)
+                }
+            }
+            //方向 越过几个
+            tabScrool.prototype.go = function(dir,num) {
+                // console.log(itemInfo.itemIndex,num)
+                let scrollLeft;
+                let itemW = 0;
+                if (dir == 'left') {
+                    for(let i = 0;i<num;i++){
+                        // console.log(i)
+                        itemW +=  Math.ceil(parseFloat($('#topNav li').eq(itemInfo.itemIndex+i).outerWidth()));
+                    }
+                    itemInfo.itemIndex -= num;
+                    scrollLeft = parseFloat($('#topNav').css('left')) + itemW;
+                } else {
+                    for(let i = 0;i<num;i++){
+                        itemW +=  Math.ceil(parseFloat($('#topNav li').eq(itemInfo.itemIndex+i).outerWidth()));
+                    }
+                    itemInfo.itemIndex += num;
+                    scrollLeft = parseFloat($('#topNav').css('left')) - itemW;
+                }
+                
+                if (itemInfo.itemIndex >= itemInfo.itemNum) {
+                    console.log(itemInfo.itemIndex,num)
+                    itemInfo.itemIndex -= num
+                    return false;
+                } else if (itemInfo.itemIndex+1 < itemInfo.itemShowNum) {
+                    console.log(itemInfo.itemIndex,itemInfo.itemShowNum)
+                    itemInfo.itemIndex += num
+                    return false;
+                }
+                // console.log(itemW, scrollLeft)
+                $('#topNav').css('left', scrollLeft);
+            }
+            tabScrool.prototype.clickGo = function(index){
+                console.log(index,itemInfo.itemIndex,itemInfo.itemShowNum);
+                if (itemInfo.itemIndex - index+1 >= itemInfo.itemShowNum) {
+                    l = itemInfo.itemIndex - index - itemInfo.itemShowNum +2;
+                    this.go('left',l)
+                    
+                } else if (itemInfo.itemIndex - index <= 0) {
+                    l = index - itemInfo.itemIndex +1;
+                    console.log(l)
+                    this.go('right',l) 
+                }
+            }
+            tabScrool.prototype.aClickGo = function(el) {
+                let index = $(el).parent().index(); //点击第几个
+                
+                this.clickGo(index)
+            }
+            tabScrool.prototype.leftClick = function(index){
+                this.clickGo(index)
+            }
+            tabScrool.prototype.getInfo = function(){
+                return itemInfo
+            }
+            
+            return tabScrool;
+        })()
+        var tabTop = new tabScrool();
+        
+        //初始化 首页或者什么页
+        var tabs = (function () {
+            //存储已打开的页面
+            let tabList = [];
+            //命名 右上角id  内容块id,导航li的类名
+            function tabs(obj) {
+                this.contentId = obj.contentId;
+                this.tabId = obj.tabId;
+                this.navClass = obj.nav;
+            }
+            //初始化
+            tabs.prototype.init = function () {
+                let elClass = '.' + this.navClass;
+                let el = $(elClass).eq(0).find('a')
+                this.addTo(el)
+            }
+
+            //添加新内容 
+            tabs.prototype.addTo = function (el) {
+                $(el).addClass('active').parent().siblings().find('a').removeClass('active')
+                let url = $(el).attr('data-value');
+                let text = $(el).text();
+                let index = url.lastIndexOf('/');
+                let item = url.substring(index + 1, url.length - 5);
+                let idName = 'tab_' + item;
+                //防止添加失败
+                for (var i = 0, l = tabList.length; i < l; i++) {
+                    if (tabList[i] == idName) {
+                        tabTop.leftClick(i)
+                        this.sameNav(idName)
+                        return;
+                    }
+                }
+                //存储已存在的
+                tabList.push(idName);
+                this.addContent(idName, url, text);
+
+                //计算tab宽度
+                tabTop.init();
+            }
+            //添加内容
+            tabs.prototype.addContent = function (idName, url, text) {
+                    //添加tab选项
+                    $('#' + this.tabId).find('a').removeClass('active')
+                    $('#' + this.tabId).append(
+                        `<li class="tabNav"><a href="#" class="${idName} active " data-value="${idName}">${text}</a></li>`
+                    )
+
+                    //其余内容隐藏
+                    $('#' + this.contentId).children().removeClass('active')
+
+                    //添加主内容
+                    $('#' + this.contentId).append(`<div id="${idName}" class="active"></div>`);
+                    $('#' + idName).load(url);
+                },
+                //点击已存在的tab
+                tabs.prototype.sameNav = function (idName) {
+                    $('#' + idName).addClass('active').siblings().removeClass('active')
+                    $('.' + idName).addClass('active').parent().siblings().find('a').removeClass('active');
+                }
+
+            return tabs;
+        })();
+
+        var test = new tabs({
+            contentId: 'content',
+            tabId: 'topNav',
+            nav: 'navItem'
+        })
+        test.init();
+
+
+        $('.navItem>a').bind('click', function () {
+            test.addTo(this);
+        });
+        $('#left').bind('click', function () {
+            tabTop.go('left',1)
+        })
+        $('#right').bind('click', function () {
+            tabTop.go('right',1)
+        })
+        $('body').on('click', '.tabNav>a', function (e) {
+            if ($(this).hasClass('activ')) {
+                return;
+            }
+            let idName = $(this).attr('data-value');
+            test.sameNav(idName)
+            //tab点击
+            tabTop.aClickGo(this)
+            e.stopPropagation(); // 阻止事件冒泡
+            e.preventDefault(); // 阻止默认行为     
+        })
+    </script>
+
+</body>
+
+</html>
