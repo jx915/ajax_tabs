@@ -168,7 +168,7 @@
             function tabScrool() {
 
             }
-            tabScrool.prototype.init = function(){
+            tabScrool.prototype.init = function () {
                 let tabW = parseFloat($('.topNav').width()) //获取tab内容块的宽度
                 let itemNum = $('#topNav li').length; //标签个数
                 let length = 0; //标签总长度
@@ -193,71 +193,70 @@
                     itemInfo.tabW = tabW;
                     itemInfo.itemNum = itemNum;
                     itemInfo.length = length;
-                    itemInfo.itemIndex = itemIndex-1;
+                    itemInfo.itemIndex = itemIndex - 1;
                     itemInfo.itemShowNum = itemIndex;
                     // console.log(tabW, itemNum, length, itemIndex)
                 }
             }
             //方向 越过几个
-            tabScrool.prototype.go = function(dir,num) {
-                // console.log(itemInfo.itemIndex,num)
+            tabScrool.prototype.go = function (dir, num) {
+                console.log(itemInfo.itemIndex, num)
                 let scrollLeft;
                 let itemW = 0;
                 if (dir == 'left') {
-                    for(let i = 0;i<num;i++){
-                        // console.log(i)
-                        itemW +=  Math.ceil(parseFloat($('#topNav li').eq(itemInfo.itemIndex+i).outerWidth()));
-                    }
                     itemInfo.itemIndex -= num;
+                    if (itemInfo.itemIndex + 1 < itemInfo.itemShowNum) {
+                        // console.log(itemInfo.itemIndex,itemInfo.itemShowNum)
+                        if (num == 1) {
+                            itemInfo.itemIndex += num
+                            return false;
+                        } else {
+                            num -= 1
+                        }
+                    }
+                    for (let i = 0; i < num; i++) {
+                        // console.log(i)
+                        itemW += Math.ceil(parseFloat($('#topNav li').eq(itemInfo.itemIndex + i).outerWidth()));
+                    }
                     scrollLeft = parseFloat($('#topNav').css('left')) + itemW;
                 } else {
-                    for(let i = 0;i<num;i++){
-                        itemW +=  Math.ceil(parseFloat($('#topNav li').eq(itemInfo.itemIndex+i).outerWidth()));
-                    }
                     itemInfo.itemIndex += num;
+                    if (itemInfo.itemIndex >= itemInfo.itemNum) {
+                        // console.log(itemInfo.itemIndex,num)
+                        if (num == 1) {
+                            itemInfo.itemIndex -= num
+                            return false;
+                        } else {
+                            num -= 1
+                        }
+                    }
+                    for (let i = 0; i < num; i++) {
+                        itemW += Math.ceil(parseFloat($('#topNav li').eq(itemInfo.itemIndex + i).outerWidth()));
+                    }
+
                     scrollLeft = parseFloat($('#topNav').css('left')) - itemW;
                 }
-                
-                if (itemInfo.itemIndex >= itemInfo.itemNum) {
-                    console.log(itemInfo.itemIndex,num)
-                    itemInfo.itemIndex -= num
-                    return false;
-                } else if (itemInfo.itemIndex+1 < itemInfo.itemShowNum) {
-                    console.log(itemInfo.itemIndex,itemInfo.itemShowNum)
-                    itemInfo.itemIndex += num
-                    return false;
-                }
-                // console.log(itemW, scrollLeft)
                 $('#topNav').css('left', scrollLeft);
             }
-            tabScrool.prototype.clickGo = function(index){
-                console.log(index,itemInfo.itemIndex,itemInfo.itemShowNum);
-                if (itemInfo.itemIndex - index+1 >= itemInfo.itemShowNum) {
-                    l = itemInfo.itemIndex - index - itemInfo.itemShowNum +2;
-                    this.go('left',l)
-                    
-                } else if (itemInfo.itemIndex - index <= 0) {
-                    l = index - itemInfo.itemIndex +1;
-                    console.log(l)
-                    this.go('right',l) 
+            tabScrool.prototype.clickGo = function (index) {
+                if(index == itemInfo.itemIndex || index == itemInfo.itemIndex+1){
+                    this.go('right',1)
+                }else if(itemInfo.itemIndex - index +1 == itemInfo.itemShowNum ){
+                    this.go('left',1)
                 }
             }
             tabScrool.prototype.aClickGo = function(el) {
                 let index = $(el).parent().index(); //点击第几个
-                
                 this.clickGo(index)
             }
-            tabScrool.prototype.leftClick = function(index){
+            tabScrool.prototype.leftClick = function (index) {
                 this.clickGo(index)
             }
-            tabScrool.prototype.getInfo = function(){
-                return itemInfo
-            }
-            
+
             return tabScrool;
         })()
         var tabTop = new tabScrool();
-        
+
         //初始化 首页或者什么页
         var tabs = (function () {
             //存储已打开的页面
@@ -334,10 +333,10 @@
             test.addTo(this);
         });
         $('#left').bind('click', function () {
-            tabTop.go('left',1)
+            tabTop.go('left', 1)
         })
         $('#right').bind('click', function () {
-            tabTop.go('right',1)
+            tabTop.go('right', 1)
         })
         $('body').on('click', '.tabNav>a', function (e) {
             if ($(this).hasClass('activ')) {
