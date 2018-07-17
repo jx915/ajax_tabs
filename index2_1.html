@@ -183,27 +183,29 @@
         var tabScrool = (function () {
             let key = 0;
             let itemInfo = {
-                tabW: '',
-                itemNum: '',
-                length: '',
-                itemIndex: '',
+                tabW: '',//tab内容块的宽度
+                itemNum: '',//标签个数
+                length: '',//标签总长度
+                itemIndex: '',//当前完整显示的最右边的index值
                 itemShowNum: '', //能够完整显示几个
             }
 
             function tabScrool() {
 
             }
-            tabScrool.prototype.init = function(){
+            tabScrool.prototype.init = function () {
                 let tabW = parseFloat($('.topNav').width()) //获取tab内容块的宽度
                 let itemNum = $('#topNav li').length; //标签个数
                 let length = 0; //标签总长度
                 let itemIndex = itemNum; //标签页能够完整第几个
                 $('#topNav li').each(function () {
                     if (length < tabW) {
-                        length += parseFloat($(this).outerWidth());
+                        length += Math.ceil(parseFloat($(this).outerWidth()));
                         if (length > tabW) {
                             itemIndex = $(this).index();
                         }
+                    }else{
+                        length += Math.ceil(parseFloat($(this).outerWidth()));
                     }
                 })
                 // console.log(tabW, itemNum, length, itemIndex)
@@ -211,66 +213,86 @@
                     $('#left').show();
                     $('#right').show()
                     $('.topNav').css('padding', '0 20px');
-                    $('.topNav ul').css('left', '20px');
+                    $('.topNav ul').css('left', '25px');
                     key = 1;
                     this.init(); //重新计算
                 } else {
                     itemInfo.tabW = tabW;
                     itemInfo.itemNum = itemNum;
                     itemInfo.length = length;
-                    itemInfo.itemIndex = itemIndex;
+                    itemInfo.itemIndex = itemIndex-1;
                     itemInfo.itemShowNum = itemIndex;
                     // console.log(tabW, itemNum, length, itemIndex)
+                    if(key == 1){
+                        l = itemInfo.length - itemInfo.tabW;
+                        // console.log(l)
+                        let left = l - 20;
+                        $('.topNav ul').css('left', -left);
+                        itemInfo.itemIndex = itemInfo.itemNum -1;
+                        // console.log(itemInfo.itemIndex)
+                    }
                 }
             }
-            tabScrool.prototype.go = function(dir) {
-                let scrollLeft;
-                let itemW;
-                if (dir == 'left') {
-                    itemInfo.itemIndex -= 1; //
-                    itemW = parseFloat($('#topNav li').eq(itemInfo.itemIndex - 1).outerWidth());
-                    scrollLeft = parseFloat($('#topNav').css('left')) + itemW;
-                } else {
-                    itemInfo.itemIndex += 1; //
-                    itemW = parseFloat($('#topNav li').eq(itemInfo.itemIndex - 1).outerWidth());
-                    scrollLeft = parseFloat($('#topNav').css('left')) - itemW;
+            //获取从0到index直接tab的宽度
+            tabScrool.prototype.getLength = function(index){
+                let length =0;
+                for(let i = 0;i<=index;i++){
+                    length += Math.ceil(parseFloat($('#topNav li').eq(i).outerWidth()));
                 }
-                if (itemInfo.itemIndex > itemInfo.itemNum) {
-                    itemInfo.itemIndex -= 1
+                let left = length -itemInfo.tabW -20;
+                if(left<0){
+                    left = -25
+                }
+                return left;
+            }
+            tabScrool.prototype.goDir = function(dir){
+                itemInfo.itemIndex = dir == 'left' ? --itemInfo.itemIndex : ++itemInfo.itemIndex
+                if(itemInfo.itemIndex>=itemInfo.itemNum){
+                    // console.log(1)
+                    itemInfo.itemIndex = itemInfo.itemNum-1;
                     return false;
-                } else if (itemInfo.itemIndex < itemInfo.itemShowNum) {
-                    itemInfo.itemIndex += 1
+                }else if(itemInfo.itemIndex+1 < itemInfo.itemShowNum){
+                    // console.log(2)
+                    itemInfo.itemIndex = itemInfo.itemShowNum;
                     return false;
                 }
-                // console.log(itemW, scrollLeft)
-                $('#topNav').css('left', scrollLeft);
+                let left = this.getLength(itemInfo.itemIndex);
+                $('.topNav ul').css('left', -left);
+                console.log(itemInfo.itemIndex)
             }
-            tabScrool.prototype.aClickGo = function(el) {
-                let index = $(el).parent().index(); //点击第几个
-                // console.log(index,itemInfo.itemIndex);
-                if (itemInfo.itemIndex - index == itemInfo.itemShowNum) {
-                    this.go('left')
-                } else if (itemInfo.itemIndex - index == 0) {
-                    this.go('right')
+            tabScrool.prototype.goIndex = function(index){
+                // console.log(index)
+                
+                if(index +1 >=itemInfo.itemNum){
+                    itemInfo.itemIndex = itemInfo.itemNum-1;
+                }else if(index == 0){
+                    itemInfo.itemIndex = itemInfo.itemShowNum-1;
+                }else if(itemInfo.itemIndex - index  >=  itemInfo.itemShowNum){
+                    let offset = itemInfo.itemIndex - index - itemInfo.itemShowNum +1
+                    itemInfo.itemIndex = itemInfo.itemIndex - offset;
+                }else{
+                    itemInfo.itemIndex = index;
                 }
+                let left = this.getLength(itemInfo.itemIndex);
+                $('.topNav ul').css('left', -left);
             }
-
             return tabScrool;
         })()
         var tabTop = new tabScrool();
         tabTop.init();
         
-
         
         $('.tabNav a').bind('click', function () {
-            tabTop.aClickGo(this)
+            let index = $(this).parent().index();
+            //tab点击
+            tabTop.goIndex(index)
         })
         //按钮绑定
         $('#left').bind('click', function () {
-            tabTop.go('left')
+            tabTop.goDir('left')
         })
         $('#right').bind('click', function () {
-            tabTop.go('right')
+            tabTop.goDir('right')
         })
     </script>
 
